@@ -1,8 +1,6 @@
 # Model Context Protocol server for Sitecore
 
-[![Build](https://github.com/antonytm/mcp-sitecore-server/actions/workflows/publish-npm.yml/badge.svg)](https://github.com/Antonytm/mcp-sitecore-server/actions/workflows/publish-npm.yml)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
-[![smithery badge](https://smithery.ai/badge/@Antonytm/mcp-sitecore-server)](https://smithery.ai/server/@Antonytm/mcp-sitecore-server)
+Enterprise validation fork of @Antonytm/mcp-sitecore-server. Testing MCP server capabilities in production Sitecore environments and contributing security, scalability, and deployment enhancements back to the main project for enterprise adoption.
 
 ## Implemented tools
 
@@ -222,7 +220,7 @@ Add the following Model Context Protocol server to your Cursor, VS Code, Claude:
 - `POWERSHELL_SERVER_URL`: The base URL for the Sitecore PowerShell Remoting API.
 - `AUTORIZATION_HEADER`: Optional. If set, it will be used as an authorization header for access to the server. MCP server will expect `authorization` header to be passed with the value of this environment variable. If environment variable is not set, the server will not check for the authorization header.
 
-## Docker images
+## Antonytm's Docker images
 
 - `antonytm/mcp-sitecore-linux`: [The Linux version](https://hub.docker.com/r/antonytm/mcp-sitecore-linux) of the MCP Sitecore server.
 - `antonytm/mcp-sitecore-windows`: [The Windows version](https://hub.docker.com/r/antonytm/mcp-sitecore-windows) of the MCP Sitecore server.
