@@ -97,12 +97,26 @@ export function startStreamableHTTP() {
     // Handle DELETE requests for session termination
     app.delete('/mcp', handleSessionRequest);
 
-    // JSON 404 fallback for unknown routes. Some MCP clients (e.g. Claude Code)
-    // probe OAuth discovery endpoints such as /.well-known/oauth-protected-resource,
-    // /.well-known/oauth-authorization-server and /register. If these return
-    // Express's default HTML 404, the client's OAuth code crashes trying to parse
-    // HTML as JSON ("Unrecognized token '<'"). Returning JSON 404 lets the client
-    // gracefully conclude the server is unauthenticated.
+    // RFC 9728 OAuth Protected Resource Metadata. Some MCP clients (e.g. Claude
+    // Code) proactively probe this endpoint before sending the first MCP request
+    // to decide whether the server is OAuth-protected. If the probe fails or
+    // 404s, those clients flag the server as "needs authentication" and refuse
+    // to connect anonymously. Returning a 200 with an empty `authorization_servers`
+    // array is the canonical "I am not OAuth-protected" signal — the client then
+    // skips the OAuth flow and connects directly to /mcp.
+    app.get('/.well-known/oauth-protected-resource', (req, res) => {
+        const host = req.headers.host ?? 'localhost';
+        const proto = (req.headers['x-forwarded-proto'] as string) ?? req.protocol ?? 'http';
+        res.status(200).json({
+            resource: `${proto}://${host}/mcp`,
+            authorization_servers: [],
+        });
+    });
+
+    // JSON 404 fallback for any other unknown routes (e.g. /register,
+    // /.well-known/oauth-authorization-server). Without this, Express's default
+    // HTML 404 (`<!DOCTYPE html>...Cannot POST /register`) makes Claude Code's
+    // OAuth client crash on `JSON.parse('<...')`.
     app.use((_req, res) => {
         res.status(404).json({ error: 'Not found' });
     });
