@@ -10,12 +10,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Setup Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: '22.x'
           registry-url: 'https://registry.npmjs.org'
+      - name: Upgrade npm (required for OIDC trusted publishing)
+        run: npm install -g npm@latest
       - name: Install dependencies
         working-directory: .
         run: npm install
@@ -27,4 +29,4 @@ jobs:
         run: npm run bundle
       - name: Publish package on NPM 📦
         working-directory: .
-        run: npm publish
+        run: npm publish --provenance --access public
