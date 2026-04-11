@@ -4,6 +4,7 @@ on:
     types: [created]
 permissions:
   id-token: write
+  contents: read
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -27,5 +28,3 @@ jobs:
       - name: Publish package on NPM 📦
         working-directory: .
         run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
