@@ -97,5 +97,15 @@ export function startStreamableHTTP() {
     // Handle DELETE requests for session termination
     app.delete('/mcp', handleSessionRequest);
 
+    // JSON 404 fallback for unknown routes. Some MCP clients (e.g. Claude Code)
+    // probe OAuth discovery endpoints such as /.well-known/oauth-protected-resource,
+    // /.well-known/oauth-authorization-server and /register. If these return
+    // Express's default HTML 404, the client's OAuth code crashes trying to parse
+    // HTML as JSON ("Unrecognized token '<'"). Returning JSON 404 lets the client
+    // gracefully conclude the server is unauthenticated.
+    app.use((_req, res) => {
+        res.status(404).json({ error: 'Not found' });
+    });
+
     app.listen(3001);
 }

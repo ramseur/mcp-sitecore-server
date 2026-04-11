@@ -48,5 +48,12 @@ export async function startSSE() {
     }
   });
 
+  // JSON 404 fallback for unknown routes so MCP clients probing OAuth discovery
+  // endpoints (/.well-known/oauth-protected-resource, /register, etc.) don't
+  // crash on Express's default HTML 404 response.
+  app.use((_req, res) => {
+    res.status(404).json({ error: 'Not found' });
+  });
+
   app.listen(3001);
 }
