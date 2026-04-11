@@ -27,4 +27,4 @@ jobs:
         run: npm run bundle
       - name: Publish package on NPM 📦
         working-directory: .
-        run: npm publish --provenance --access public
+        run: npm publish
