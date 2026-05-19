@@ -48,5 +48,24 @@ export async function startSSE() {
     }
   });
 
+  // RFC 9728 OAuth Protected Resource Metadata — signals "no auth required"
+  // so MCP clients (e.g. Claude Code) don't flag the server as needing auth
+  // on proactive discovery probes. See streamable-http.ts for the full rationale.
+  app.get('/.well-known/oauth-protected-resource', (req, res) => {
+    const host = req.headers.host ?? 'localhost';
+    const proto = (req.headers['x-forwarded-proto'] as string) ?? req.protocol ?? 'http';
+    res.status(200).json({
+      resource: `${proto}://${host}/sse`,
+      authorization_servers: [],
+    });
+  });
+
+  // JSON 404 fallback for unknown routes so MCP clients probing other OAuth
+  // discovery endpoints (/.well-known/oauth-authorization-server, /register)
+  // don't crash on Express's default HTML 404 response.
+  app.use((_req, res) => {
+    res.status(404).json({ error: 'Not found' });
+  });
+
   app.listen(3001);
 }
